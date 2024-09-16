@@ -22,7 +22,23 @@ export interface MovieDetailDTO{
     original_language: string;
     production_companies: CompanyDTO[];
     vote_average: number;
+    videos: VideoListDTO;
 }
+
+export interface VideoListDTO{
+    results: VideoDTO[];
+}
+
+export interface VideoDTO{
+    id: number;
+    key: string;
+    name: string;
+    site: string;
+    size: number;
+    type: string;
+    
+}
+
 
 export interface CompanyDTO{
     id: number;
@@ -40,3 +56,4 @@ export interface SearchResultDTO{
     total_pages: number;
     total_results: number;
 }
+

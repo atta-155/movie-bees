@@ -42,7 +42,7 @@ const CustomAppBar: React.FC = () => {
 
         <AppBar position="absolute" sx={{ backgroundColor: 'transparent', boxShadow: 'none', zIndex: 20 }}>
             <Toolbar>
-                <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" sx={{ width: '100%', paddingBlock: 4 }}>
+                <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBlock: 2 }}>
 
                     <Stack direction={'row'} spacing={0} alignItems={'center'} >
                         <Box sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, alignItems: 'center' }}>
@@ -198,7 +198,7 @@ const CustomAppBar: React.FC = () => {
                         <Stack sx={{ display: { xs: 'none', md: 'flex' } }} spacing={2} direction="row">
 
                             {/* <WhiteButton text="Login" /> */}
-                            <TransparentButton text="Sign in" />
+                            <WhiteButton text="Sign in" />
                         </Stack>
                     </Stack>
                 </Stack>

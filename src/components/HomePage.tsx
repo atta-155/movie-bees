@@ -19,7 +19,7 @@ import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
 import MovieCard from './common/MovieCard';
 import ApiService from '../service/ApiService';
-import { Genre, MovieSummary } from '../model/Model';
+import { Genre, MovieSummary, SearchResult } from '../model/Model';
 import Autocomplete from '@mui/material/Autocomplete';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import CustomAppBar from './common/AppBar';
@@ -30,10 +30,12 @@ import Snackbar, {  SnackbarCloseReason } from '@mui/material/Snackbar';
 const HomePage: React.FC = () => {
   const apiService = new ApiService();
 
-  const [trendingMovies, setTrendingMovies] = useState<MovieSummary[]>([]);
+  const [trendingMovies, setTrendingMovies] = useState<SearchResult>();
+  const [topRatedMovies, setTopRatedMovies] = useState<SearchResult>();
+
   const [genreList, setGenreList] = useState<Genre[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<Genre>({ id: 0, name: 'All' });
-  const [movieByGenre, setMovieByGenre] = useState<MovieSummary[]>([]);
+  const [movieByGenre, setMovieByGenre] = useState<SearchResult>();
   const navigate = useNavigate();
 
   // SnackBar
@@ -62,16 +64,35 @@ const HomePage: React.FC = () => {
     console.log("goToMovieWatchNow: ", movieId);
     navigate(`/watch/${movieId}`); 
   };
+  const goToTrendingNowViewAll = () => {
+    console.log("goToTrendingNowViewAll: ", );
+    navigate(`/trending`); 
+  };
+  const goToGenreViewAll = (genreId: string) => {
+    console.log("goToGenreViewAll: ", );
+    navigate(`/genre/${genreId}`); 
+  };
 
   const getTrendingMovies = async () => {
     try {
-      const res = await apiService.getTrendingMovies();
+      const res = await apiService.getTrendingMovies(1);
       if (res) {
         console.log("getTrendingMovies: ", res);
         setTrendingMovies(res)
       }
     } catch (error) {
       console.log("Fail to fetch trending movies!");
+    }
+  };
+  const getTopRatedMovies = async (page: number) => {
+    try {
+      const res = await apiService.getTopRatedMovies(1);
+      if (res) {
+        console.log("getTopRatedMovies: ", res);
+        setTopRatedMovies(res)
+      }
+    } catch (error) {
+      console.log("Fail to fetch top-rated movies!");
     }
   };
 
@@ -88,9 +109,9 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const getMovieByGenre = async (genre: number) => {
+  const getMovieByGenre = async (genre: number, page: number) => {
     try {
-      const res = await apiService.getMovieByGenre(genre);
+      const res = await apiService.getMovieByGenre(genre, page);
       if (res) {
         console.log("getMovieByGenre: ", res);
         setMovieByGenre(res)
@@ -104,8 +125,8 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     getGenreList();
     getTrendingMovies();
-    getMovieByGenre(0);
-
+    getMovieByGenre(0, 1);
+    getTopRatedMovies(1);
   }, []);
 
   return (
@@ -219,7 +240,7 @@ const HomePage: React.FC = () => {
             <Typography variant="h5" component="h2" sx={{ marginBottom: 2 }}>
               Trending Now
             </Typography>
-            <TransparentButton text="View All" endIcon={<KeyboardDoubleArrowRightIcon />} />
+            <TransparentButton text="View All" endIcon={<KeyboardDoubleArrowRightIcon />} onClick={()=>goToTrendingNowViewAll()} />
           </Stack>
 
           <Stack
@@ -231,7 +252,7 @@ const HomePage: React.FC = () => {
             }}
           >
             {
-              trendingMovies.map((movie) => (
+              trendingMovies?.results.map((movie) => (
                 <MovieCard id={movie.id} title={movie.title} image={movie.image} year={movie.releaseYear} onClick={(id) => goToMovieDetail(id)} />
               ))
             }
@@ -248,12 +269,12 @@ const HomePage: React.FC = () => {
                 selectedGenre.id == genre.id ?
                   <WhiteButton key={genre.id} text={genre.name} onClick={() => {
                     setSelectedGenre(genre)
-                    getMovieByGenre(genre.id)
+                    getMovieByGenre(genre.id, 1)
                   }} />
                   :
                   <TransparentButton key={genre.id} text={genre.name} onClick={() => {
                     setSelectedGenre(genre)
-                    getMovieByGenre(genre.id)
+                    getMovieByGenre(genre.id,1)
                   }} />
               ))
             }
@@ -267,7 +288,7 @@ const HomePage: React.FC = () => {
             size='small'
             onChange={(event, newValue) => {
               setSelectedGenre(newValue!!)
-              getMovieByGenre(newValue!!.id)
+              getMovieByGenre(newValue!!.id, 1)
             }}
             sx={{
               width: 200,
@@ -296,7 +317,7 @@ const HomePage: React.FC = () => {
             }}
           />
 
-          <TransparentButton text="View All" endIcon={<KeyboardDoubleArrowRightIcon />} />
+          <TransparentButton text="View All" endIcon={<KeyboardDoubleArrowRightIcon />} onClick={()=>goToGenreViewAll(selectedGenre!!.id.toString()) } />
 
         </Stack>
 
@@ -309,12 +330,47 @@ const HomePage: React.FC = () => {
           }}
         >
           {
-            movieByGenre.map((movie) => (
+            movieByGenre?.results.map((movie) => (
               <MovieCard id={movie.id} title={movie.title} image={movie.image} year={movie.releaseYear} onClick={(id) => goToMovieDetail(id)} />
             ))
           }
         </Stack>
 
+        <Box
+          sx={{
+            position: 'relative',
+            left: 0,
+            // top: '-10%',
+            zIndex: 100,
+            color: 'white',
+            // padding: '0px 32px',
+            mt: 16,
+            mb: 8
+          }}
+        >
+          <Stack direction={'row'} justifyContent='space-between' alignItems='center' sx={{ mb: 4 }}>
+            <Typography variant="h5" component="h2" sx={{ marginBottom: 2 }}>
+              Top Rated Movies
+            </Typography>
+            <TransparentButton text="View All" endIcon={<KeyboardDoubleArrowRightIcon />} onClick={()=>goToTrendingNowViewAll()} />
+          </Stack>
+
+          <Stack
+            direction={'row'}
+            spacing={4}
+            sx={{
+              overflowX: 'auto', // Enable horizontal scrolling
+
+            }}
+          >
+            {
+              topRatedMovies?.results.map((movie) => (
+                <MovieCard id={movie.id} title={movie.title} image={movie.image} year={movie.releaseYear} onClick={(id) => goToMovieDetail(id)} />
+              ))
+            }
+          </Stack>
+
+        </Box>
 
       </Container>
 

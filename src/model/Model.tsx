@@ -22,8 +22,8 @@ export interface MovieDetail{
     original_language: string;
     production_companies: Company[];
     vote_average: number;
+    videoUrl: string;
 }
-
 
 export interface Company{
     id: number;

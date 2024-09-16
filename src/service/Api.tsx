@@ -22,14 +22,28 @@ export default class Api extends React.Component<ApiProps> {
         }
     };
      
-    getTrendingMovies = async (): Promise<MovieSummaryDTO[]> => {
-        const url = this.props.baseUrl + "/trending/movie/week?language=en-US";
+    getTrendingMovies = async (page: number): Promise<SearchResultDTO> => {
+        const url = this.props.baseUrl + "/trending/movie/week?language=en-US&page="+ page;
          
         try {
             const response = await fetch(url, this.options);
-            const data= await response.json();
-            const movieList: MovieSummaryDTO[] = data.results.slice(0,8);
-            return movieList;           
+            const data: SearchResultDTO = await response.json();
+            return data;           
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    };
+  
+    getTopRatedMovies = async (page: number): Promise<SearchResultDTO> => {
+        const url = this.props.baseUrl + "/movie/top_rated?language=en-US&page="+ page;
+        // fetch('https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1', options)
+
+        try {
+            const response = await fetch(url, this.options);
+            const data: SearchResultDTO = await response.json();
+            return data;           
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -54,19 +68,18 @@ export default class Api extends React.Component<ApiProps> {
         }
     };
 
-    getMovieByGenre = async (genre: number): Promise<MovieSummaryDTO[]> => {
+    getMovieByGenre = async (genre: number, page: number): Promise<SearchResultDTO> => {
         let url = "";
         if(genre == 0){
-            url = this.props.baseUrl + "/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc";
+            url = this.props.baseUrl + "/discover/movie?include_adult=false&include_video=false&language=en-US&page="+ page + "&sort_by=popularity.desc";
         }else{
-            url = this.props.baseUrl + "/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres="+ genre;
+            url = this.props.baseUrl + "/discover/movie?include_adult=false&include_video=false&language=en-US&page="+page+"&sort_by=popularity.desc&with_genres="+ genre;
         }
 
         try {
             const response = await fetch(url, this.options);
-            const data= await response.json();
-            const movieList: MovieSummaryDTO[] = data.results.slice(0,16);
-            return movieList;           
+            const data: SearchResultDTO= await response.json();
+            return data;           
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -75,8 +88,8 @@ export default class Api extends React.Component<ApiProps> {
     };
 
     getMovieDetailById = async (movieId: number): Promise<MovieDetailDTO> => {
-        const url = this.props.baseUrl + "/movie/"+ movieId+ '?language=en-US';
-         
+        const url = this.props.baseUrl + "/movie/"+ movieId+ '?append_to_response=videos&language=en-US';
+
         try {
             const response = await fetch(url, this.options);
             const data: MovieDetailDTO= await response.json();

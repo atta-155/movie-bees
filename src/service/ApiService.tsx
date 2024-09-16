@@ -1,5 +1,6 @@
 // import { Album, Track } from "../models/ViewModel";
 import { Genre, MovieDetail, MovieImage, MovieSummary, SearchResult } from "../model/Model";
+import { SearchResultDTO } from "../model/RestModel";
 import Api from "./Api";
 
 export default class ApiService {
@@ -10,18 +11,41 @@ export default class ApiService {
     imgBaseUrl = process.env.REACT_APP_BASE_IMAGE_URL!!;
     api = new Api({ baseUrl: this.baseUrl });
 
-    getTrendingMovies = async (): Promise<MovieSummary[]> => {
+    getTrendingMovies = async (page: number): Promise<SearchResult> => {
+        return this.api.getTrendingMovies(page).then(res => {
+            let searchResult: SearchResult = {
+                page: res.page,
+                results: res.results.map(item => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        image: `${this.imgBaseUrl}/w200${item.poster_path}`,
+                        releaseYear: new Date(item.release_date).getFullYear().toString()
+                    }
+                }),
+                total_pages: res.total_pages,
+                total_results: res.total_results
+            }
+            return searchResult;
+        })
+    }
 
-        return this.api.getTrendingMovies().then(res => {
-            let data: MovieSummary[] = res.map(item => {
-                return {
-                    id: item.id,
-                    title: item.title,
-                    image: `${this.imgBaseUrl}/w500${item.poster_path}`,
-                    releaseYear: new Date(item.release_date).getFullYear().toString()
-                }
-            })
-            return data;
+    getTopRatedMovies = async (page: number): Promise<SearchResult> => {
+        return this.api.getTopRatedMovies(page).then(res => {
+            let searchResult: SearchResult = {
+                page: res.page,
+                results: res.results.map(item => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        image: `${this.imgBaseUrl}/w200${item.poster_path}`,
+                        releaseYear: new Date(item.release_date).getFullYear().toString()
+                    }
+                }),
+                total_pages: res.total_pages,
+                total_results: res.total_results
+            }
+            return searchResult;
         })
     }
     getGenrelist = async (): Promise<Genre[]> => {
@@ -38,18 +62,32 @@ export default class ApiService {
         })
     }
 
-    getMovieByGenre = async (genre: number): Promise<MovieSummary[]> => {
+    getMovieByGenre = async (genre: number, page: number): Promise<SearchResult> => {
 
-        return this.api.getMovieByGenre(genre).then(res => {
-            let data: MovieSummary[] = res.map(item => {
-                return {
-                    id: item.id,
-                    title: item.title,
-                    image: `${this.imgBaseUrl}/w500${item.poster_path}`,
-                    releaseYear: new Date(item.release_date).getFullYear().toString()
-                }
-            })
-            return data;
+        return this.api.getMovieByGenre(genre, page).then(res => {
+            // let data: MovieSummary[] = res.map(item => {
+            //     return {
+            //         id: item.id,
+            //         title: item.title,
+            //         image: `${this.imgBaseUrl}/w500${item.poster_path}`,
+            //         releaseYear: new Date(item.release_date).getFullYear().toString()
+            //     }
+            // })
+            // return data;
+            let searchResult: SearchResult = {
+                page: res.page,
+                results: res.results.map(item => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        image: `${this.imgBaseUrl}/w500${item.poster_path}`,
+                        releaseYear: new Date(item.release_date).getFullYear().toString()
+                    }
+                }),
+                total_pages: res.total_pages,
+                total_results: res.total_results
+            }
+            return searchResult;
         })
     }
 
@@ -77,7 +115,8 @@ export default class ApiService {
                             logo_path: `${this.imgBaseUrl}/w92${item.logo_path}`,
                         }
                     }),
-                    vote_average: Number(res.vote_average.toFixed(1))
+                    vote_average: Number(res.vote_average.toFixed(1)),
+                    videoUrl: `https://www.youtube.com/watch?v=${res.videos.results[0].key }`
                   
                 }
             return data;

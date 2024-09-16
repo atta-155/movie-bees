@@ -17,6 +17,7 @@ import ImageTile from './common/ImageTile';
 import Footer from './common/Footer';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import CustomReactPlayer from './common/CustomReactPlayer';
 
 const MovieDetailPage: React.FC = () => {
     const apiService = new ApiService();
@@ -52,8 +53,8 @@ const MovieDetailPage: React.FC = () => {
     };
     const goToMovieWatchNow = (movieId: string) => {
         console.log("goToMovieWatchNow: ", movieId);
-        navigate(`/watch/${movieId}`); 
-      };
+        navigate(`/watch/${movieId}`);
+    };
     const getMovieDetailById = async (movieId: number) => {
         try {
             const res = await apiService.getMovieDetailById(movieId);
@@ -141,13 +142,13 @@ const MovieDetailPage: React.FC = () => {
                 }}
             >
 
-                <Box sx={{ position: 'relative', zIndex: 1, pt: { xs: '10%', md: '5%' } }}>
+                <Box sx={{ position: 'relative', zIndex: 1, pt: { xs: '20%', sm: '10%', md: '5%' } }}>
                     <Grid container spacing={4} sx={{ p: { xs: 2, md: 8 } }}>
                         {/* First Column: Poster, Title, Summary, Buttons */}
                         <Grid item xs={12} md={9} spacing={4}>
                             {/* Display Poster */}
                             <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="start">
-                                <Stack mb={{ xs: 2, md: 0, }} alignItems={{ xs: 'center', md: 'start' }} sx={{ w: '100%' }}>
+                                {/* <Stack mb={{ xs: 2, md: 0, }} justifyContent={{ xs: 'center', md: 'start' }} sx={{ w: '100%' }}>
                                     <Box>
                                         <img
                                             src={movie.poster_path}
@@ -155,6 +156,24 @@ const MovieDetailPage: React.FC = () => {
                                             style={{
                                                 width: '300px',
                                                 // maxWidth: '300px',
+                                                height: 'auto',
+                                                borderRadius: 8,
+                                            }}
+                                        />
+                                    </Box>
+                                </Stack> */}
+                                <Stack
+                                    mb={{ xs: 2, md: 0 }}
+                                    justifyContent={{ xs: 'center', md: 'flex-start' }}
+                                    alignItems={{ xs: 'center', md: 'flex-start' }}
+                                    sx={{ width: '100%' }}
+                                >
+                                    <Box>
+                                        <img
+                                            src={movie.poster_path}
+                                            alt={movie.original_title}
+                                            style={{
+                                                width: '300px',
                                                 height: 'auto',
                                                 borderRadius: 8,
                                             }}
@@ -232,7 +251,7 @@ const MovieDetailPage: React.FC = () => {
                                             },
                                         }}
                                     >
-                                        <WhiteButton text="Watch Now" startIcon={<PlayArrowRoundedIcon />} onClick={()=>{goToMovieWatchNow(movie.id)}} />
+                                        <WhiteButton text="Watch Now" startIcon={<PlayArrowRoundedIcon />} onClick={() => { goToMovieWatchNow(movie.id) }} />
                                         <TransparentButton text="Add to WatchList" startIcon={<AddIcon />} onClick={handleClick} />
                                     </Stack>
                                 </Box>
@@ -244,10 +263,16 @@ const MovieDetailPage: React.FC = () => {
                                     Watch Trailer
                                 </Typography>
 
-                                <VideoPlayer
+                                {/* <VideoPlayer
                                     url="https://link.testfile.org/bNYZFw"
+                                    // url={movie.videoUrl}
                                     title="Sample Video"
 
+                                /> */}
+                                <CustomReactPlayer
+                                    url={movie.videoUrl}
+                                    width='100%'
+                                    height='500px'
                                 />
                             </Box>
 

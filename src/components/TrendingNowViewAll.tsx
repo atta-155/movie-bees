@@ -9,14 +9,14 @@ import ApiService from '../service/ApiService';
 import { Genre, MovieSummary, SearchResult } from '../model/Model';
 import MovieCard from './common/MovieCard';
 
-const WatchListPage: React.FC = () => {
+const TrendingNowViewAll: React.FC = () => {
     const apiService = new ApiService();
 
     const [result, setResult] = useState<SearchResult>();
 
-    const getTrendingMovies = async () => {
+    const getTrendingMovies = async (page: number) => {
         try {
-          const res = await apiService.getTrendingMovies(1);
+          const res = await apiService.getTrendingMovies(page);
           if (res) {
             console.log("getTrendingMovies: ", res);
             setResult(res)
@@ -27,7 +27,7 @@ const WatchListPage: React.FC = () => {
       };
   
     useEffect(() => {
-        getTrendingMovies();
+        getTrendingMovies(page);
     });
 
     const navigate = useNavigate();
@@ -36,6 +36,21 @@ const WatchListPage: React.FC = () => {
         navigate(`/movie/${movieId}`); // Navigate to movie detail page with the movieId as a param
     };
 
+    
+    const [genreList, setGenreList] = useState<Genre[]>([]);
+
+    const [page, setPage] = useState(1);
+    const [sortedBy, setSortedBy] = useState({
+        key: "popularity.desc",
+        label: "Popularity",
+    });
+    const [selectedGenre, setSelectedGenre] = useState<Genre>({ id: 0, name: 'All' });
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+        getTrendingMovies(page)
+
+    };
     return (
         <Box sx={{ p: 3, mt: 12 }}>
             {/* Search Bar */}
@@ -55,7 +70,7 @@ const WatchListPage: React.FC = () => {
             </form> */}
 
             <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', mt: 4, mb: 8 }}>
-                Watch List Movies
+                Trending Now
             </Typography>
 
            
@@ -74,9 +89,26 @@ const WatchListPage: React.FC = () => {
                 ))}
             </Grid>
 
-           
+            {/* Pagination */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, bgcolor: 'black', p: 2, borderRadius: 2 }}>
+                <Pagination
+                    count={Math.ceil(result?.total_results!! / 10)}
+                    page={page}
+                    onChange={handlePageChange}
+                    sx={{
+                        '& .MuiPaginationItem-root': {
+                            color: 'white', // Default text color
+                        },
+                        '& .Mui-selected': {
+                            backgroundColor: 'yellow', // Selected background color
+                            color: 'black', // Text color on selected
+                        },
+                    }}
+                    color="primary"
+                />
+            </Box>
         </Box>
     );
 };
 
-export default WatchListPage;
+export default TrendingNowViewAll;

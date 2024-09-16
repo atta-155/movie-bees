@@ -9,6 +9,8 @@ import Layout from './components/Layout';
 import DiscoverPage from './components/DiscoverPage';
 import WatchListPage from './components/WatchListPage';
 import WatchNowPage from './components/WatchNowPage';
+import TrendingNowViewAll from './components/TrendingNowViewAll';
+import GenreViewAll from './components/GenerViewAll';
 
 
 const App: React.FC = () => {
@@ -22,6 +24,8 @@ const App: React.FC = () => {
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/watch-list" element={<WatchListPage />} />
         <Route path="/watch/:movieId" element={<WatchNowPage />} />
+        <Route path="/trending" element={<TrendingNowViewAll />} />
+        <Route path="/genre/:genreId" element={<GenreViewAll />} />
 
       </Routes>
       </Layout>

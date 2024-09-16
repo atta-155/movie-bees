@@ -17,6 +17,7 @@ import ImageTile from './common/ImageTile';
 import Footer from './common/Footer';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import CustomReactPlayer from './common/CustomReactPlayer';
 
 const WatchNowPage: React.FC = () => {
     const apiService = new ApiService();
@@ -142,17 +143,22 @@ const WatchNowPage: React.FC = () => {
                     <Grid container spacing={4} sx={{ p: { xs: 2, md: 8 } }}>
                         {/* First Column: Poster, Title, Summary, Buttons */}
                         <Grid item xs={12} md={9} spacing={4}>
-                          
+
                             {/* Trailor */}
                             <Box>
                                 <Typography variant="h5" sx={{ mb: 4 }}>
                                     {movie.original_title}
                                 </Typography>
 
-                                <VideoPlayer
+                                {/* <VideoPlayer
                                     url="https://link.testfile.org/bNYZFw"
                                     title="Sample Video"
 
+                                /> */}
+                                <CustomReactPlayer
+                                    url={movie.videoUrl}
+                                    width='100%'
+                                    height='500px'
                                 />
                             </Box>
 
